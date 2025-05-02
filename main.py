@@ -3,6 +3,7 @@ from PySide6.QtGui import QKeySequence, QFont
 from PySide6.QtCore import Qt
 from main_ui import Ui_MainWindow
 from datetime import datetime
+import os
 
 class NotesCatchers(QMainWindow):
     
@@ -16,6 +17,13 @@ class NotesCatchers(QMainWindow):
                 self.is_unsaved = False
                 self.update_window_title(file_path)
 
+        # Store file_name as an instance variable
+            self.file_name = os.path.basename(file_path)
+            self.file_path = file_path  # Optional: Store full path if needed
+            self.exist = True
+            self.update_window_title(self.file_name)
+        
+
     def open_note(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Open Note", "", self.file_filter)
         if file_path:
@@ -26,10 +34,11 @@ class NotesCatchers(QMainWindow):
             self.update_window_title(file_path)
 
     def update_window_title(self, file_path=None):
-        if file_path:
-            self.setWindowTitle(f"{file_path} - NoteCatchers")
+        file_name = getattr(self, 'file_name', 'Untitled')
+        if self.is_unsaved:
+            self.setWindowTitle(f"{file_name}* - NoteCatchers")
         else:
-            self.setWindowTitle("Untitled* - NoteCatchers" if self.is_unsaved else "Untitled - NoteCatchers")
+            self.setWindowTitle(f"{file_name} - NoteCatchers")
 
     def new_note(self):
         self.ui.textEdit.setPlainText("")
